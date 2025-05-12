@@ -19,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     {
       "text": "Welcome to Tokoto, Let’s shop!",
       "image": "assets/images/splash_1.png"
+
     },
     {
       "text":

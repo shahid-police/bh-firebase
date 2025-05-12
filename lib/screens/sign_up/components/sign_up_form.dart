@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../components/custom_surfix_icon.dart';
@@ -18,9 +20,12 @@ class _SignUpFormState extends State<SignUpForm> {
   String? password;
   String? conform_password;
   bool remember = false;
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
   final List<String?> errors = [];
 
   void addError({String? error}) {
+
     if (!errors.contains(error)) {
       setState(() {
         errors.add(error);
@@ -36,6 +41,14 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
+  Future<void> createUserWithEmailAndPassword(String newEmail, String newPassword) async {
+  final userCreds = await  FirebaseAuth.instance.createUserWithEmailAndPassword
+    (
+      email: newEmail,
+      password: newPassword);
+
+  print(userCreds);
+  }
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -43,6 +56,7 @@ class _SignUpFormState extends State<SignUpForm> {
       child: Column(
         children: [
           TextFormField(
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             onSaved: (newValue) => email = newValue,
             onChanged: (value) {
@@ -74,6 +88,7 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           const SizedBox(height: 20),
           TextFormField(
+            controller: _passwordController,
             obscureText: true,
             onSaved: (newValue) => password = newValue,
             onChanged: (value) {
@@ -137,9 +152,10 @@ class _SignUpFormState extends State<SignUpForm> {
           FormError(errors: errors),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
+               await createUserWithEmailAndPassword(_emailController.text.trim(), _passwordController.text.trim());
                 // if all are valid then go to success screen
                 Navigator.pushNamed(context, CompleteProfileScreen.routeName);
               }
