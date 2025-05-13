@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../components/custom_surfix_icon.dart';
@@ -19,6 +20,10 @@ class _SignFormState extends State<SignForm> {
   String? email;
   String? password;
   bool? remember = false;
+
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+
   final List<String?> errors = [];
 
   void addError({String? error}) {
@@ -37,6 +42,20 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  Future<void> loginFromEmailAndPassword(String newEmail, String newPassword) async {
+    try{
+
+     final userCred = await FirebaseAuth.instance.signInWithEmailAndPassword(
+         email: newEmail,
+         password: newPassword
+     );
+      print(userCred);
+    }
+    on FirebaseAuthException catch(e){
+      print('ERROR'+e.message.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -45,6 +64,7 @@ class _SignFormState extends State<SignForm> {
         children: [
           TextFormField(
             keyboardType: TextInputType.emailAddress,
+            controller: _emailController,
             onSaved: (newValue) => email = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
@@ -76,6 +96,7 @@ class _SignFormState extends State<SignForm> {
           const SizedBox(height: 20),
           TextFormField(
             obscureText: true,
+            controller: _passwordController,
             onSaved: (newValue) => password = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
@@ -135,6 +156,7 @@ class _SignFormState extends State<SignForm> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 // if all are valid then go to success screen
+                loginFromEmailAndPassword(_emailController.text.trim(), _passwordController.text.trim());
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, LoginSuccessScreen.routeName);
               }

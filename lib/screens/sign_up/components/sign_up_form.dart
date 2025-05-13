@@ -42,12 +42,15 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   Future<void> createUserWithEmailAndPassword(String newEmail, String newPassword) async {
-  final userCreds = await  FirebaseAuth.instance.createUserWithEmailAndPassword
-    (
-      email: newEmail,
-      password: newPassword);
+    try {
+      final userCreds = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: newEmail, password: newPassword);
 
-  print(userCreds);
+      print(userCreds);
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
   @override
   Widget build(BuildContext context) {
