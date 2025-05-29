@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../cart/cart_screen.dart';
@@ -19,8 +20,10 @@ class HomeHeader extends StatelessWidget {
           const Expanded(child: SearchField()),
           const SizedBox(width: 16),
           IconBtnWithCounter(
-            svgSrc: "assets/icons/Cart Icon.svg",
-            press: () => Navigator.pushNamed(context, CartScreen.routeName),
+            svgSrc: "assets/icons/Log out.svg",
+            //press: () => Navigator.pushNamed(context, CartScreen.routeName),
+            press: () => FirebaseAuth.instance.signOut(),
+
           ),
           const SizedBox(width: 8),
           IconBtnWithCounter(
