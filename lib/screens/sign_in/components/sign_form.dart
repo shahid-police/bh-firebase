@@ -152,13 +152,14 @@ class _SignFormState extends State<SignForm> {
           FormError(errors: errors),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 // if all are valid then go to success screen
-                loginFromEmailAndPassword(_emailController.text.trim(), _passwordController.text.trim());
+                await loginFromEmailAndPassword(_emailController.text.trim(), _passwordController.text.trim());
                 KeyboardUtil.hideKeyboard(context);
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                if (FirebaseAuth.instance.currentUser != null)
+                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
               }
             },
             child: const Text("Continue"),

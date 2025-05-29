@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shop_app/screens/admin/add_product.dart';
 import 'package:shop_app/screens/products/products_screen.dart';
 
 import 'screens/cart/cart_screen.dart';
@@ -17,7 +19,8 @@ import 'screens/splash/splash_screen.dart';
 // We use name route
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
-  InitScreen.routeName: (context) => const InitScreen(),
+
+  InitScreen.routeName: (context) => const RootDecider(),
   SplashScreen.routeName: (context) => const SplashScreen(),
   SignInScreen.routeName: (context) => const SignInScreen(),
   ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(),
@@ -30,4 +33,34 @@ final Map<String, WidgetBuilder> routes = {
   DetailsScreen.routeName: (context) => const DetailsScreen(),
   CartScreen.routeName: (context) => const CartScreen(),
   ProfileScreen.routeName: (context) => const ProfileScreen(),
+  AddProductPage.routeName: (context) =>  AddProductPage(),
 };
+
+class RootDecider extends StatelessWidget {
+  const RootDecider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SplashScreen();
+        } else if (snapshot.hasData) {
+          // Navigate to Home
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+          });
+        } else {
+          // Navigate to SignIn
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, SignInScreen.routeName);
+          });
+        }
+
+        // Return an empty widget while navigation is happening
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
